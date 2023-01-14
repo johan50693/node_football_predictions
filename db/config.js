@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import mysql from 'mysql2/promise'
 
 export const connection = await mysql.createPool({
   host: 'us-east.connect.psdb.cloud',
@@ -11,4 +11,4 @@ export const connection = await mysql.createPool({
   ssl: {
     rejectUnauthorized: false
   }
-});
+})

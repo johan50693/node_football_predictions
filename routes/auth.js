@@ -3,16 +3,28 @@
  * host /apiu/auth/
  */
 
-import { response, Router } from 'express';
-import { check } from 'express-validator';
-import { createUser, login, refresh } from '../controller/index.js';
+import { Router } from 'express'
+import { check } from 'express-validator'
+import { createUser, login, refresh } from '../controller/index.js'
+import { validarCampos } from '../middlewares/validar-campos.js'
 
-const router= Router();
+const router = Router()
 
-router.post('/create', createUser);
+router.post('/create',
+  [
+    check('name', 'El nombre es obligatorio').not().isEmpty(),
+    check('email', 'El email es obligatorio').isEmail(),
+    check('password', 'El password debe ser de 6 caracteres').isLength({ min: 6 }),
+    validarCampos
+  ], createUser)
 
-router.post('/login', login);
+router.post('/login',
+  [
+    check('name', 'El nombre es obligatorio').not().isEmpty(),
+    check('email', 'El email es obligatorio').isEmail(),
+    validarCampos
+  ], login)
 
-router.get('/refresh', refresh);
+router.get('/refresh', refresh)
 
-export default router;
+export default router
