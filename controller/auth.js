@@ -2,6 +2,7 @@
 import { request, response } from 'express'
 import { connection } from '../db/config.js'
 import bcrypt from 'bcryptjs'
+import { generarJWT } from '../helpers/index.js'
 
 export const createUser = async (req = request, res = response) => {
   
@@ -30,14 +31,16 @@ export const createUser = async (req = request, res = response) => {
 
     const [ resultInsert ] = await connection.execute("INSERT INTO users (name, email, password, created_at )VALUES (?,?,?,?)",[name, email, password, date])
     
-    // TODO: Generar token JWT y retornarlo
+    // * Generar token JWT
+    const token = await generarJWT(resultInsert.insertId,name)
 
     return res.json({
       code: 200,
       endpoint: 'api/auth/create',
       message: 'Usuario creado de manera exitosa',
       uid: resultInsert.insertId,
-      name: name
+      name: name,
+      token
     })
 
   } catch (error) {
@@ -45,7 +48,7 @@ export const createUser = async (req = request, res = response) => {
     return res.status(500).json({
       code: 500,
       endpoint: 'api/auth/create',
-      message: 'No se ha podido crear el usuario',
+      message: 'Ha ocurrido un error en la creación del usuario, comuniquese con el equipo de soporte',
       error
     })
   }
@@ -79,14 +82,16 @@ export const login = async (req = request, res = response) => {
       })
     }
 
-    // TODO: Generar token JWT y retornarlo
+    // * Generar token JWT
+    const token = await generarJWT(result[0].id,result[0].name)
 
     return res.json({
       code: 200,
       endpoint: 'api/auth/login',
       message: 'Inicio de sesión exitoso',
       uid: result[0].id,
-      name: result[0].name
+      name: result[0].name,
+      token
     })
     
   } catch (error) {
@@ -94,7 +99,7 @@ export const login = async (req = request, res = response) => {
     return res.status(500).json({
       code: 500,
       endpoint: 'api/auth/login',
-      message: 'Ha ocurrido un error al iniciar sesión',
+      message: 'Ha ocurrido un error en el inicio de sesión, comuniquese con el equipo de soporte',
       error
     })
   }
