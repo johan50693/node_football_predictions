@@ -11,7 +11,7 @@ export const validarJWT = (req, res = response, next) => {
   if (!token) {
     return res.status(401).json({
       code: 401,
-      endpoint: req._parsedOriginalUrl.path,
+      endpoint: req.originalUrl,
       message: 'El token no esta definido en la petición',
     })
   }
@@ -25,7 +25,7 @@ export const validarJWT = (req, res = response, next) => {
   } catch (error) {
     return res.status(401).json({
       code: 401,
-      endpoint: req._parsedOriginalUrl.path,
+      endpoint: req.originalUrl,
       message: 'El token no es válido',
     })
   }

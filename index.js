@@ -1,7 +1,7 @@
 import express from 'express'
 import { config } from 'dotenv'
 import cors from 'cors'
-import { authRouter } from './routes/index.js'
+import { authRouter, tournamentRouter } from './routes/index.js'
 
 config()
 
@@ -19,6 +19,7 @@ app.use(express.static('public'))
 
 // * Definición de rutas
 app.use('/api/auth', authRouter)
+app.use('/api/tournament', tournamentRouter)
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor activo en el puerto ${process.env.PORT}`)
