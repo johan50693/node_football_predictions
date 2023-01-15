@@ -7,6 +7,7 @@ import { Router } from 'express'
 import { check } from 'express-validator'
 import { createUser, login, refresh } from '../controller/index.js'
 import { validarCampos } from '../middlewares/validar-campos.js'
+import { validarJWT } from '../middlewares/index.js'
 
 const router = Router()
 
@@ -25,6 +26,6 @@ router.post('/login',
     validarCampos
   ], login)
 
-router.get('/refresh', refresh)
+router.get('/refresh', validarJWT ,refresh)
 
 export default router

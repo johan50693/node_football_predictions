@@ -15,7 +15,7 @@ export const createUser = async (req = request, res = response) => {
     if (result.length > 0) {
       return res.status(400).json({
         code: 400,
-        endpoint: 'api/auth/create',
+        endpoint: req._parsedOriginalUrl.path,
         message: 'El usuario ya se encuentra registrado'
       })
     }
@@ -36,7 +36,7 @@ export const createUser = async (req = request, res = response) => {
 
     return res.json({
       code: 200,
-      endpoint: 'api/auth/create',
+      endpoint: req._parsedOriginalUrl.path,
       message: 'Usuario creado de manera exitosa',
       uid: resultInsert.insertId,
       name: name,
@@ -47,7 +47,7 @@ export const createUser = async (req = request, res = response) => {
     console.log(error);
     return res.status(500).json({
       code: 500,
-      endpoint: 'api/auth/create',
+      endpoint: req._parsedOriginalUrl.path,
       message: 'Ha ocurrido un error en la creación del usuario, comuniquese con el equipo de soporte',
       error
     })
@@ -77,7 +77,7 @@ export const login = async (req = request, res = response) => {
     if (!passwordIsValid) {
       return res.status(400).json({
         code: 400,
-        endpoint: 'api/auth/login',
+        endpoint: req._parsedOriginalUrl.path,
         message: 'El usuario y contraseña no son válidos'
       })
     }
@@ -87,7 +87,7 @@ export const login = async (req = request, res = response) => {
 
     return res.json({
       code: 200,
-      endpoint: 'api/auth/login',
+      endpoint: req._parsedOriginalUrl.path,
       message: 'Inicio de sesión exitoso',
       uid: result[0].id,
       name: result[0].name,
@@ -98,17 +98,23 @@ export const login = async (req = request, res = response) => {
     console.log(error);
     return res.status(500).json({
       code: 500,
-      endpoint: 'api/auth/login',
+      endpoint: req._parsedOriginalUrl.path,
       message: 'Ha ocurrido un error en el inicio de sesión, comuniquese con el equipo de soporte',
       error
     })
   }
 }
 
-export const refresh = (req = request, res = response) => {
+export const refresh = async (req = request, res = response) => {
+
+  const { uid, name } = req
+  // Generar token jwt
+  const token = await generarJWT(uid,name)
+
   res.json({
     code: 200,
-    endpoint: 'api/auth/refresh',
-    message: 'create success'
+    endpoint: req._parsedOriginalUrl.path,
+    message: 'El token se ha generado de manera exitosa',
+    token
   })
 }
