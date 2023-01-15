@@ -62,3 +62,61 @@ export const updateTournament = async (req, res = response) => {
     })
   }
 }
+
+export const listTournaments = async (req, res = response) => {
+
+  const uid = req.uid
+  
+  try {
+    const [ result ] = await connection.execute("SELECT * FROM tournaments t INNER JOIN tournaments_users tu ON t.id = tu.tournament_id WHERE tu.user_id = ?",[uid])
+    
+    return res.json({
+      code: 200,
+      endpoint: req.originalUrl,
+      message: 'Se retornan la lista de torneos',
+      data: result
+    })
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      code: 500,
+      endpoint: req.originalUrl,
+      message: 'Ha ocurrido un error al listar el torneo, comuniquese con el equipo de soporte',
+      error
+    })
+  }
+}
+
+export const getTournament = async (req, res = response) => {
+
+  const id = req.params.id
+  
+  try {
+    const [ result ] = await connection.execute("SELECT * FROM tournaments t WHERE t.id = ?",[id])
+    
+    if (result.length <= 0) {
+      return res.status(400).json({
+        code: 400,
+        endpoint: req.originalUrl,
+        message: 'El torneo enviado no se encuentra registrado'
+      })
+    }
+
+    return res.json({
+      code: 200,
+      endpoint: req.originalUrl,
+      message: 'Se retorna el torneo solicitado',
+      data: result
+    })
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      code: 500,
+      endpoint: req.originalUrl,
+      message: 'Ha ocurrido un error al obtener el torneo, comuniquese con el equipo de soporte',
+      error
+    })
+  }
+}
