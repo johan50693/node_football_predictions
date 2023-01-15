@@ -5,7 +5,7 @@
 
 
 import { Router } from 'express'
-import { createTournament } from '../controller/index.js';
+import { createTournament, updateTournament } from '../controller/index.js';
 import { validarJWT, validarCampos } from '../middlewares/index.js';
 
 const router= Router()
@@ -14,6 +14,7 @@ const router= Router()
 router.use(validarJWT);
 
 router.post('/create',validarCampos, createTournament)
+router.put('/:id',validarCampos, updateTournament)
 
 export default router;
 
