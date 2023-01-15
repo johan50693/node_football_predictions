@@ -3,8 +3,9 @@
 CREATE TABLE users (
   id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
-  username varchar(255) NOT NULL,
   email varchar(255) NOT NULL,
+  password varchar(255) NOT NULL,
+  created_at date,
   PRIMARY KEY (id)
 );
 
