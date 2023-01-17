@@ -41,14 +41,15 @@ CREATE TABLE points (
 
 CREATE TABLE matches (
   id int NOT NULL AUTO_INCREMENT,
-  team_a int NOT NULL, 
-  team_b int NOT NULL, 
+  team_a varchar(255) NOT NULL,
+  team_b varchar(255) NOT NULL,
   goals_a int, 
   goals_b int, 
   penalties_a int, 
   penalties_b int, 
   date TIMESTAMP ,
   created_at date,
+  status int, 
   PRIMARY KEY (id)
 );
 
@@ -57,6 +58,7 @@ CREATE TABLE poll (
   tournament_id int NOT NULL,
   matches_id int NOT NULL,
   created_by int NOT NULL,
+  status int, 
   created_at date,
   PRIMARY KEY (id),
   KEY tournament_id_idx (tournament_id),

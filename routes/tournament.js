@@ -21,7 +21,7 @@ router.post('/create',
     check('exact_marker', 'El marcador exacto es un campo obligatorio').not().isEmpty(),
     check('winner_selection', 'La seleccion del ganador es un campo obligatoria').not().isEmpty(),
     check('goals_of_a_team', 'Los goles de un equipo es un ccampo obligatorio').not().isEmpty(),
-    check('goals_difference', 'La diferencia de goles es un ccampo obligatorio').not().isEmpty(),
+    check('goals_difference', 'La diferencia de goles es un campo obligatorio').not().isEmpty(),
     validarCampos
   ], createTournament)
 router.put('/:id',
