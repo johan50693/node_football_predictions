@@ -1,5 +1,6 @@
 import { response } from 'express'
 import { connection } from '../db/config.js'
+import { canAssignMatches } from '../helpers/index.js'
 
 export const createMatch = async (req, res=response) => {
 
@@ -104,7 +105,7 @@ export const getMatch = async (req, res = response) => {
       return res.status(400).json({
         code: 400,
         endpoint: req.originalUrl,
-        message: 'El el partido no se encuentra registrado'
+        message: 'El partido no se encuentra registrado'
       })
     }
 
@@ -169,15 +170,30 @@ export const assignToTournament = async (req, res=response) => {
   createdAt.toISOString().split('T')[0] 
 
   try {
-    
+    const isValidIds = await canAssignMatches(tournament_id,matches_id)
+
+    if (!isValidIds) {
+      return res.status(400).json({
+        code: 400,
+        endpoint: req.originalUrl,
+        message: 'El id de los registros suministrados no se considera valido',
+      })
+    }
+
     const [ result ] = await connection.execute("SELECT * FROM poll p WHERE p.tournament_id= ? AND p.matches_id= ?",[tournament_id, matches_id])
     
-    if ( result.length < 0 ) {
+    if ( result.length > 0 ) {
       
-      await connection.execute("UPDATE poll SET tournament_id= ?, matches_id = ?, created_by = ? WHERE poll.id= ?",[tournament_id, matches_id, created_by, result[0].id])
+      // await connection.execute("UPDATE poll SET tournament_id= ?, matches_id = ?, created_by = ? WHERE poll.id= ?",[tournament_id, matches_id, created_by, result[0].id])
+      return res.status(400).json({
+        code: 400,
+        endpoint: req.originalUrl,
+        message: 'El partido ya se encuentra asignado',
+      })
+
     }else{
 
-      await connection.execute("INSERT INTO poll (tournament_id, matches_id, created_by, status, created_at )VALUES (?,?,?,1,?)",[tournament_id, matches_id, created_by, createdAt])
+      // await connection.execute("INSERT INTO poll (tournament_id, matches_id, created_by, status, created_at )VALUES (?,?,?,1,?)",[tournament_id, matches_id, created_by, createdAt])
     }
     
     return res.json({

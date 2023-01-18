@@ -77,6 +77,7 @@ CREATE TABLE answers (
   created_at date,
   poll_id int NOT NULL,
   user_id int NOT NULL, 
+  status int, 
   PRIMARY KEY (id),
   KEY user_id_idx (user_id),
   KEY poll_id_idx (poll_id)
