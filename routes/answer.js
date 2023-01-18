@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { check } from 'express-validator';
 import { createAnswer, deleteAnswer, getAnswer, listAnswer, updateAnswer } from '../controller/index.js';
 import { validarCampos, validarJWT } from '../middlewares/index.js';
 
