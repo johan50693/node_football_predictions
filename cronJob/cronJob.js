@@ -42,8 +42,8 @@ export const cronEveryDaySecond = () => {
 
 export const cronEveryDayThird = () => {
 
-  cron.schedule('0 17 * * 0-7', async () => {
-    console.log('running a task update matches At 17:00 on every day-of-week from Sunday through Sunday.');
+  cron.schedule('30 18 * * 0-7', async () => {
+    console.log('running a task update matches At 18:30 on every day-of-week from Sunday through Sunday.');
     
     let today = new Date()
     const newDate= today.toISOString().split("T")[0].split('-')
