@@ -115,6 +115,8 @@ export const refresh = async (req = request, res = response) => {
     code: 200,
     endpoint: req.originalUrl,
     message: 'El token se ha generado de manera exitosa',
+    uid,
+    name,
     token
   })
 }
