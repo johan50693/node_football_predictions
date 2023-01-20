@@ -41,6 +41,7 @@ CREATE TABLE points (
 
 CREATE TABLE matches (
   id int NOT NULL AUTO_INCREMENT,
+  league varchar(255) NOT NULL,
   team_a varchar(255) NOT NULL,
   team_b varchar(255) NOT NULL,
   goals_a int, 

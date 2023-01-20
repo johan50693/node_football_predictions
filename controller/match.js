@@ -4,7 +4,7 @@ import { canAssignMatches } from '../helpers/index.js'
 
 export const createMatch = async (req, res=response) => {
 
-  const {team_a, team_b, goals_a, goals_b, penalties_a, penalties_b, date} = req.body
+  const {league,team_a, team_b, goals_a, goals_b, penalties_a, penalties_b, date} = req.body
 
   // * Fecha actual
   let createdAt = new Date()
@@ -12,7 +12,17 @@ export const createMatch = async (req, res=response) => {
 
   try {
     
-   await connection.execute("INSERT INTO matches (team_a,team_b,goals_a,goals_b,penalties_a,penalties_b,date,created_at, status)VALUES (?,?,?,?,?,?,?,?,1)",[team_a, team_b, goals_a, goals_b, penalties_a, penalties_b, date, createdAt])
+    const [existMatch] = await connection.execute("SELECT * FROM matches WHERE date =? AND team_a =? AND team_b =?",[date,team_a, team_b])
+    
+    if (existMatch.length > 0) {
+      return res.json({
+        code: 400,
+        endpoint: req.originalUrl,
+        message: 'El partido ya se encuentra cargado',
+      })
+    }
+    
+    await connection.execute("INSERT INTO matches (league,team_a,team_b,goals_a,goals_b,penalties_a,penalties_b,date,created_at, status)VALUES (?,?,?,?,?,?,?,?,?,1)",[league,team_a, team_b, goals_a, goals_b, penalties_a, penalties_b, date, createdAt])
 
     return res.json({
       code: 200,
@@ -193,7 +203,7 @@ export const assignToTournament = async (req, res=response) => {
 
     }else{
 
-      // await connection.execute("INSERT INTO poll (tournament_id, matches_id, created_by, status, created_at )VALUES (?,?,?,1,?)",[tournament_id, matches_id, created_by, createdAt])
+      await connection.execute("INSERT INTO poll (tournament_id, matches_id, created_by, status, created_at )VALUES (?,?,?,1,?)",[tournament_id, matches_id, created_by, createdAt])
     }
     
     return res.json({
