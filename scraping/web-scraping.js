@@ -26,6 +26,16 @@ export const getScraping = async (year,month,day) => {
   })
 }
 
+export const updateScraping = async (year,month,day) => {
+
+  let data =[]
+  data = await getDataByScrapping(year,month,day)
+  
+  data.forEach( async (element,index) => {
+    const {liga,teamA, teamB, goals_a, goals_b, penalties_a, penalties_b, dateFormat } = element
+    await updateMatchesByScrapping (liga,teamA, teamB, goals_a, goals_b, penalties_a, penalties_b, dateFormat)
+  })
+}
 
 const cleanText = (text) => {
   return text.replace(/\t|\n|»/g,'')
@@ -47,6 +57,30 @@ const addMatchesByScrapping = async (league,team_a, team_b, goals_a, goals_b, pe
     }
     
     await connection.execute("INSERT INTO matches (league,team_a,team_b,goals_a,goals_b,penalties_a,penalties_b,date,created_at, status)VALUES (?,?,?,?,?,?,?,?,?,1)",[league,team_a, team_b, goals_a, goals_b, penalties_a, penalties_b, date, createdAt])
+
+    return true
+
+  } catch (error) {
+    console.log(error);
+    return false
+  }
+}
+
+const updateMatchesByScrapping = async (league,team_a, team_b, goals_a, goals_b, penalties_a, penalties_b, date) => {
+
+  // * Fecha actual
+  let createdAt = new Date()
+  createdAt.toISOString().split('T')[0]
+
+  try {
+    
+    const [existMatch] = await connection.execute("SELECT * FROM matches WHERE date =? AND team_a =? AND team_b =?",[date,team_a, team_b])
+    
+    if (existMatch.length <= 0) {
+      return false
+    }
+
+    await connection.execute("UPDATE matches SET  goals_a=?, goals_b=?, penalties_a=?, penalties_b=? WHERE date =? AND team_a =? AND team_b =?",[goals_a, goals_b, penalties_a, penalties_b,date,team_a, team_b])
 
     return true
 
