@@ -45,6 +45,7 @@ export const updateTournament = async (req, res = response) => {
     }
 
     await connection.execute("UPDATE  tournaments t SET name= ?, description= ? WHERE t.id = ?",[name, description,id])
+    await connection.execute("UPDATE  points p SET exact_marker=?, winner_selection=?, goals_of_a_team=?, goals_difference=? WHERE p.tournament_id=?",[exact_marker, winner_selection, goals_of_a_team, goals_difference, id ])
 
     return res.json({
       code: 200,
@@ -68,7 +69,7 @@ export const listTournaments = async (req, res = response) => {
   const uid = req.uid
   
   try {
-    const [ result ] = await connection.execute("SELECT * FROM tournaments t INNER JOIN tournaments_users tu ON t.id = tu.tournament_id WHERE tu.user_id = ? and t.status=1",[uid])
+    const [ result ] = await connection.execute("SELECT * FROM tournaments t INNER JOIN tournaments_users tu ON t.id = tu.tournament_id INNER JOIN points p on p.tournament_id = t.id WHERE tu.user_id = ? and t.status=1",[uid])
     
     return res.json({
       code: 200,
@@ -93,7 +94,7 @@ export const getTournament = async (req, res = response) => {
   const id = req.params.id
   
   try {
-    const [ result ] = await connection.execute("SELECT * FROM tournaments t WHERE t.id = ?",[id])
+    const [ result ] = await connection.execute("SELECT * FROM tournaments t INNER JOIN points p on p.tournament_id = t.id WHERE t.id = ?",[id])
     
     if (result.length <= 0) {
       return res.status(400).json({
