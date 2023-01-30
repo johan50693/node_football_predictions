@@ -96,9 +96,15 @@ export const updateAnswer = async (req, res=response) => {
 export const listAnswer = async (req, res = response) => {
   
   const uid = req.uid
-
+  const tournament = req.params.tournament
   try {
-    const [ result ] = await connection.execute("SELECT * FROM answers a WHERE a.status=1 AND a.user_id=?",[uid])
+    const [ result ] = await connection.execute(`select a.id, m.team_a, m.team_b , m.goals_a as m_goals_a, m.goals_b as m_goals_b, m.penalties_a as m_penalties_a, m.penalties_b as m_penalties_b, a.goals_a as a_goals_a, a.goals_b as a_goals_b, a.penalties_a as a_penalties_a, a.penalties_b as a_penalties_b  , p.id as poll_id, m.id as matches_id
+                                                from matches m
+                                                inner join poll p on p.matches_id = m.id
+                                                inner  join answers a on a.poll_id = p.id
+                                                inner join users u on u.id = a.user_id 
+                                                where p.tournament_id = ? and a.user_id =?
+                                                `,[tournament,uid])
     
     return res.json({
       code: 200,

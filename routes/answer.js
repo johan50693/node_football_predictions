@@ -29,7 +29,7 @@ router.put('/:id',
     validarCampos
   ],updateAnswer)
 
-router.get('/list',[validarCampos],listAnswer)
+router.get('/list/:tournament',[validarCampos],listAnswer)
 router.get('/:id',[validarCampos],getAnswer)
 router.delete('/:id',[validarCampos],deleteAnswer)
 
