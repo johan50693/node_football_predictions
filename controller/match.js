@@ -203,7 +203,12 @@ export const assignToTournament = async (req, res=response) => {
 
     }else{
 
-      await connection.execute("INSERT INTO poll (tournament_id, matches_id, created_by, status, created_at )VALUES (?,?,?,1,?)",[tournament_id, matches_id, created_by, createdAt])
+      const [pollInsert] = await connection.execute("INSERT INTO poll (tournament_id, matches_id, created_by, status, created_at )VALUES (?,?,?,1,?)",[tournament_id, matches_id, created_by, createdAt])
+      await connection.execute(`INSERT INTO answers 
+                                ( goals_a, goals_b, penalties_a, penalties_b, date, created_at, poll_id, user_id, status)
+                                select null,null, null, null, now(), now(), ${pollInsert.insertId}, tu.user_id , 1 
+                                from tournaments_users tu 
+                                where tu.tournament_id =${tournament_id}`)
     }
     
     return res.json({

@@ -70,8 +70,8 @@ CREATE TABLE poll (
 
 CREATE TABLE answers (
   id int NOT NULL AUTO_INCREMENT,
-  goals_a int NOT NULL, 
-  goals_b int NOT NULL, 
+  goals_a int, 
+  goals_b int, 
   penalties_a int, 
   penalties_b int, 
   date TIMESTAMP ,
