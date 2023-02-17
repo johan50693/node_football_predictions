@@ -1,6 +1,6 @@
 /**
  * Rutas para usuarios /Auth
- * host /apiu/auth/
+ * host /api/auth/
  */
 
 import { Router } from 'express'

@@ -1,7 +1,7 @@
 import express from 'express'
 import { config } from 'dotenv'
 import cors from 'cors'
-import { answerRouter, authRouter, matchRouter, tournamentRouter } from './routes/index.js'
+import { answerRouter, authRouter, matchRouter, tournamentRouter, userRouter } from './routes/index.js'
 import { cronEveryDayFirst, cronEveryDaySecond, cronEveryDayThird, cronEveryMonday } from './cronJob/cronJob.js'
 
 config()
@@ -23,6 +23,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/tournament', tournamentRouter)
 app.use('/api/match', matchRouter)
 app.use('/api/answer', answerRouter)
+app.use('/api/user', userRouter)
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor activo en el puerto ${process.env.PORT}`)

@@ -84,7 +84,7 @@ export const updateMatch = async (req, res=response) => {
 export const listMatch = async (req, res = response) => {
   
   try {
-    const [ result ] = await connection.execute("SELECT * FROM matches m WHERE m.status=1")
+    const [ result ] = await connection.execute("SELECT * FROM matches m WHERE m.status=1 order by m.id DESC")
     
     return res.json({
       code: 200,

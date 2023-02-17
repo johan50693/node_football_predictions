@@ -69,7 +69,7 @@ export const listTournaments = async (req, res = response) => {
   const uid = req.uid
   
   try {
-    const [ result ] = await connection.execute("SELECT * FROM tournaments t INNER JOIN tournaments_users tu ON t.id = tu.tournament_id INNER JOIN points p on p.tournament_id = t.id WHERE tu.user_id = ? and t.status=1",[uid])
+    const [ result ] = await connection.execute("SELECT * FROM tournaments t INNER JOIN tournaments_users tu ON t.id = tu.tournament_id INNER JOIN points p on p.tournament_id = t.id WHERE tu.user_id = ? and t.status=1 order by t.id DESC",[uid])
     
     return res.json({
       code: 200,

@@ -1,6 +1,6 @@
 /**
  *  Rutas para torneos / tournaments
- *  host /api/events
+ *  host /api/tournament/
  */
 
 

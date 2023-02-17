@@ -1,3 +1,8 @@
+/**
+ *  Rutas para partidos / matches
+ *  host /api/match/
+ */
+
 import { Router } from "express";
 import { check } from "express-validator";
 import { assignToTournament, createMatch, deleteMatch, getMatch, listMatch, updateMatch } from "../controller/match.js";

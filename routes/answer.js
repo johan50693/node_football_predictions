@@ -1,3 +1,8 @@
+/**
+ *  Rutas para respuestas / answers
+ *  host /api/answer/
+ */
+
 import { Router } from 'express'
 import { check } from 'express-validator';
 import { createAnswer, deleteAnswer, getAnswer, listAnswer, updateAnswer } from '../controller/index.js';

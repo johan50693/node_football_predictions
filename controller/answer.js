@@ -104,6 +104,7 @@ export const listAnswer = async (req, res = response) => {
                                                 inner  join answers a on a.poll_id = p.id
                                                 inner join users u on u.id = a.user_id 
                                                 where p.tournament_id = ? and a.user_id =?
+                                                order by a.id DESC
                                                 `,[tournament,uid])
     
     return res.json({
