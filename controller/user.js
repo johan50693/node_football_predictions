@@ -71,3 +71,39 @@ export const listUsersPoints = async (req, res = response) => {
     })
   }
 }
+
+export const assignToTournament = async (req, res = response) => {
+
+  const {user_id, tournament_id } = req.body
+  
+  try {
+    
+    const [result] = await connection.execute("select * from tournaments_users tu where tu.user_id=? and tu.tournament_id=?",[user_id, tournament_id])
+
+    if(result.length > 0){
+      return res.json({
+        code: 200,
+        endpoint: req.originalUrl,
+        message: 'El usuario ya esta registrado en el torneo seleccionado',
+      })
+    }
+    
+    await connection.execute("INSERT INTO tournaments_users (user_id, tournament_id, status )VALUES (?,?,1)",[user_id, tournament_id])
+
+    return res.json({
+      code: 200,
+      endpoint: req.originalUrl,
+      message: 'El usuario fue asignado de manera exitosa',
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      endpoint: req.originalUrl,
+      message: 'Ha ocurrido un error al crear el torneo, comuniquese con el equipo de soporte',
+      error
+    })
+  }
+}
+
