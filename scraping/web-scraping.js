@@ -12,7 +12,8 @@ const tournaments= [
   'Copa de Francia',
   'Serie A',
   'EFL Cup',
-  'Champions League'
+  'Champions League',
+  'Europa League'
 ]
 
 export const getScraping = async (year,month,day) => {

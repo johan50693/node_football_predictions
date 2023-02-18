@@ -1,7 +1,7 @@
 import { response } from 'express'
 import { connection } from '../db/config.js'
 import { canAssignMatches } from '../helpers/index.js'
-import { updateScraping } from '../scraping/web-scraping.js'
+import { getScraping, updateScraping } from '../scraping/web-scraping.js'
 
 export const createMatch = async (req, res=response) => {
 
@@ -245,6 +245,35 @@ export const updatebyrange = async (req, res=response) => {
       code: 200,
       endpoint: req.originalUrl,
       message: 'Los resultados de los partidos fueron actualizados de manera exitosa',
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      endpoint: req.originalUrl,
+      message: 'Ha ocurrido un error al actualizar los partidos, comuniquese con el equipo de soporte',
+      error
+    })
+  }
+}
+
+export const createbyrange = async (req, res=response) => {
+
+  const {date,numberofdays} = req.body
+  
+  try {
+
+    for (let i = 0; i < numberofdays; i++) {
+      let today = new Date(date)
+      today.setDate(today.getDate() + i)
+      const newDate= today.toISOString().split("T")[0].split('-')
+      await getScraping(newDate[0],newDate[1],newDate[2])
+    }
+    return res.json({
+      code: 200,
+      endpoint: req.originalUrl,
+      message: 'Las proximas jornadas fueron cargadas de manera exitosa',
     })
 
   } catch (error) {

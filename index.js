@@ -28,9 +28,3 @@ app.use('/api/user', userRouter)
 app.listen(process.env.PORT, () => {
   console.log(`Servidor activo en el puerto ${process.env.PORT}`)
 })
-
-
-cronEveryMonday()
-cronEveryDayFirst()
-cronEveryDaySecond()
-cronEveryDayThird()
