@@ -44,7 +44,15 @@ export const listUsersPoints = async (req, res = response) => {
     })
 
     const dataResponse = data.filter( (user) => user != null )
-    dataResponse.sort((x, y) => x.points + y.points)
+    dataResponse.sort((x, y) =>{
+      if(x.points == y.points) {
+        return 0; 
+      }
+      if(x.points > y.points) {
+        return -1;
+      }
+      return 1;
+    })
 
     return res.json({
       code: 200,
