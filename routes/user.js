@@ -15,7 +15,7 @@ router.use(validarJWT)
 router.get('/list/points/:tournament',[validarCampos],listUsersPoints)
 router.post('/assignToTournament',
   [
-    check('user_id', 'El id del usuario es un campo obligatorio').not().isEmpty(),
+    check('email', 'El correo del usuario es un campo obligatorio').not().isEmpty(),
     check('tournament_id', 'El id del torneo es un campo obligatoria').not().isEmpty(),
     validarCampos
   ], assignToTournament)

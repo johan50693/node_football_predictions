@@ -74,9 +74,21 @@ export const listUsersPoints = async (req, res = response) => {
 
 export const assignToTournament = async (req, res = response) => {
 
-  const {user_id, tournament_id } = req.body
+  const {email, tournament_id } = req.body
   
   try {
+    
+    const [userResult] = await connection.execute("select * from users u where u.email = ?",[email])
+
+    if(userResult.length <= 0){
+      return res.json({
+        code: 400,
+        endpoint: req.originalUrl,
+        message: 'El usuario no se encuentra registrado',
+      })
+    }
+
+    const user_id = userResult[0].id
     
     const [result] = await connection.execute("select * from tournaments_users tu where tu.user_id=? and tu.tournament_id=?",[user_id, tournament_id])
 
