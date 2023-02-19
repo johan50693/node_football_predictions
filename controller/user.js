@@ -102,6 +102,17 @@ export const assignToTournament = async (req, res = response) => {
     
     await connection.execute("INSERT INTO tournaments_users (user_id, tournament_id, status )VALUES (?,?,1)",[user_id, tournament_id])
 
+    const [pollResult] = await connection.execute("select * from poll p where p.tournament_id = ?",[tournament_id])
+    
+    for (let i = 0; i < pollResult.length; i++) {
+      
+      await connection.execute(`INSERT INTO answers 
+                                ( goals_a, goals_b, penalties_a, penalties_b, date, created_at, poll_id, user_id, status)
+                                select null,null, null, null, now(), now(), ${pollResult[i].id}, tu.user_id , 1 
+                                from tournaments_users tu 
+                                where tu.tournament_id =${tournament_id}  and tu.user_id =${user_id}`)
+    }
+
     return res.json({
       code: 200,
       endpoint: req.originalUrl,
