@@ -4,10 +4,11 @@ import { connection } from '../db/config.js'
 export const createTournament = async (req, res = response) => {
 
   const {name,description,exact_marker,winner_selection,goals_of_a_team,goals_difference } = req.body
-  
+  const uid = req.uid
+
   try {
     
-    const [ insertTournaments ] = await connection.execute("INSERT INTO tournaments (name, description, status )VALUES (?,?,1)",[name, description])
+    const [ insertTournaments ] = await connection.execute("INSERT INTO tournaments (name, description,createdby, status )VALUES (?,?,?,1)",[name, description,uid])
     await connection.execute("INSERT INTO points (exact_marker,winner_selection,goals_of_a_team,goals_difference, tournament_id )VALUES (?,?,?,?,?)",[exact_marker, winner_selection, goals_of_a_team, goals_difference, insertTournaments.insertId ])
     await connection.execute("INSERT INTO tournaments_users (user_id, tournament_id, status )VALUES (?,?,?)",[req.uid, insertTournaments.insertId,1])
 

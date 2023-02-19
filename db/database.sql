@@ -13,6 +13,7 @@ CREATE TABLE tournaments (
   id int NOT NULL AUTO_INCREMENT,
   name varchar(255) NOT NULL,
   description varchar(255),
+  createdby int,
   status int, 
   PRIMARY KEY (id)
 );
