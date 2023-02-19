@@ -94,7 +94,7 @@ export const assignToTournament = async (req, res = response) => {
 
     if(result.length > 0){
       return res.json({
-        code: 200,
+        code: 400,
         endpoint: req.originalUrl,
         message: 'El usuario ya esta registrado en el torneo seleccionado',
       })
