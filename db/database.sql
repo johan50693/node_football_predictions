@@ -84,3 +84,15 @@ CREATE TABLE answers (
   KEY user_id_idx (user_id),
   KEY poll_id_idx (poll_id)
 );
+
+
+CREATE TABLE cron_job (
+  id int NOT NULL AUTO_INCREMENT,
+  name varchar(100),
+  type varchar(10),
+  schedule varchar(10),
+  status int, 
+  date_of_execution TIMESTAMP,
+  created_at date,
+  PRIMARY KEY (id)
+);

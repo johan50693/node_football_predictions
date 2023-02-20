@@ -286,3 +286,72 @@ export const createbyrange = async (req, res=response) => {
     })
   }
 }
+
+export const checkUpdateByDay = async (req, res=response) => {
+
+  // * Fecha actual
+  let dateFull = new Date()
+  let date = new Date().toISOString().split('T')[0]
+  let hours = new Date().toTimeString().split(' ')[0]
+  let name = "checkUpdateByDay"
+  let schedule = (Number(hours.split(':')[0]) < 12) ? 'AM':'PM'
+  let type = 'UPDATE'
+  let diference = 0
+  let canUpdate = true
+
+  try {
+
+    const [ result ] = await connection.execute("select *from cron_job cj where cj.created_at =?",[date])
+    
+    if(result.length == 20) {
+      return res.status(400).json({
+        code: 400,
+        endpoint: req.originalUrl,
+        message: 'Las actualizaciones diarias ya se han completado',
+      })
+    }
+
+    if(result.length > 0) {
+      
+      let lastDate= new Date(result[result.length-1].date_of_execution)
+      let actualDate = new Date()
+      diference = (actualDate.getTime() - lastDate.getTime()) / 1000 / (3600) 
+      // console.log(lastDate, actualDate, diference)
+
+      if(diference < 1){
+        canUpdate = false
+      }
+    }
+
+    if  (canUpdate) {
+
+      await connection.execute("INSERT INTO cron_job (name,type, schedule,date_of_execution,created_at,status)VALUES (?,?,?,?,?,1)",[name,type,schedule,dateFull,dateFull])
+      let today = new Date()
+      today.setDate(today.getDate() )
+      const newDate= today.toISOString().split("T")[0].split('-')
+      await updateScraping(newDate[0],newDate[1],newDate[2])
+
+      return res.json({
+        code: 200,
+        endpoint: req.originalUrl,
+        message: 'Se ha ejecutado  la tarea de actualizacion diaria de forma exitosa',
+      })
+    }
+
+
+    return res.json({
+      code: 200,
+      endpoint: req.originalUrl,
+      message: 'Ya posee una actualización reciente, por favor verifique mas tarde',
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      endpoint: req.originalUrl,
+      message: 'Ha ocurrido un error al ejecutar la tarea de actualizacion diaria, comuniquese con el equipo de soporte',
+      error
+    })
+  }
+}
