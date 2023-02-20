@@ -93,6 +93,7 @@ CREATE TABLE cron_job (
   schedule varchar(10),
   status int, 
   date_of_execution TIMESTAMP,
+  date_end TIMESTAMP,
   created_at date,
   PRIMARY KEY (id)
 );

@@ -5,7 +5,7 @@
 
 import { Router } from "express";
 import { check } from "express-validator";
-import { assignToTournament, checkUpdateByDay, createbyrange, createMatch, deleteMatch, getMatch, listMatch, updatebyrange, updateMatch } from "../controller/match.js";
+import { assignToTournament, checkCreateByWeek, checkUpdateByDay, createbyrange, createMatch, deleteMatch, getMatch, listMatch, updatebyrange, updateMatch } from "../controller/match.js";
 import { validarCampos, validarJWT } from "../middlewares/index.js";
 
 
@@ -59,6 +59,9 @@ router.post('/createbyrange/results',[
   check('numberofdays', 'El campo cantidad de días es obligatorio').not().isEmpty(),
   validarCampos
 ],createbyrange);
+router.post('/checkcreatebyweek/results',[
+  validarCampos
+],checkCreateByWeek);
 
 
 export default router

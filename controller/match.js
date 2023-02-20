@@ -301,7 +301,7 @@ export const checkUpdateByDay = async (req, res=response) => {
 
   try {
 
-    const [ result ] = await connection.execute("select *from cron_job cj where cj.created_at =?",[date])
+    const [ result ] = await connection.execute("select *from cron_job cj where cj.created_at =? and cj.name=?",[date,name])
     
     if(result.length == 20) {
       return res.status(400).json({
@@ -343,6 +343,97 @@ export const checkUpdateByDay = async (req, res=response) => {
       code: 200,
       endpoint: req.originalUrl,
       message: 'Ya posee una actualización reciente, por favor verifique mas tarde',
+    })
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      code: 500,
+      endpoint: req.originalUrl,
+      message: 'Ha ocurrido un error al ejecutar la tarea de actualizacion diaria, comuniquese con el equipo de soporte',
+      error
+    })
+  }
+}
+
+export const checkCreateByWeek = async (req, res=response) => {
+
+  // * Fecha actual
+  let dateFull = new Date()
+  let date = new Date().toISOString().split('T')[0]
+  let hours = new Date().toTimeString().split(' ')[0]
+  let name = "checkCreateByWeek"
+  let schedule = (Number(hours.split(':')[0]) < 12) ? 'AM':'PM'
+  let type = 'CREATE'
+  let diference = 0
+  let canCreate = false
+  let day = 7
+  let sumDiference = 0
+
+  try {
+
+    const [ result ] = await connection.execute("select *from cron_job cj where cj.name=? order by cj.id desc",[name])
+
+    if(result.length <= 0) {
+      
+      for (let i = 0; i < day; i++) {
+        let today = new Date(date)
+        today.setDate(today.getDate() + i)
+        const newDate= today.toISOString().split("T")[0].split('-')
+        await getScraping(newDate[0],newDate[1],newDate[2])
+      }
+      let dateEnd = new Date(date)
+      dateEnd.setDate(dateEnd.getDate()+day)
+      let newDateEnd = dateEnd.toISOString().split("T")[0]
+      // console.log(newDateEnd);
+      await connection.execute("INSERT INTO cron_job (name,type, schedule,date_of_execution,created_at,status,date_end)VALUES (?,?,?,?,?,1,?)",[name,type,schedule,dateFull,dateFull,newDateEnd])
+      
+      return res.json({
+        code: 200,
+        endpoint: req.originalUrl,
+        message: 'Los partidos de la semana se han actualizado de manera exitosa',
+      })
+    }
+
+    if(result.length > 0) {
+      
+      let lastDate= new Date(result[0].date_end).getTime()
+      let actualDate = new Date().getTime()
+      diference = (lastDate - actualDate) / (1000 * 60 *60 *24) 
+      sumDiference = Math.trunc(diference)
+      // console.log(lastDate, actualDate, diference, diference < 0, sumDiference)
+
+      if(diference < 0){
+        canCreate = true
+      }
+    }
+
+    if  (canCreate) {
+
+      for (let i = sumDiference; i < day; i++) {
+        let today = new Date(date)
+        today.setDate(today.getDate() + i)
+        // console.log(today);
+        const newDate= today.toISOString().split("T")[0].split('-')
+        await getScraping(newDate[0],newDate[1],newDate[2])
+      }
+      let dateEnd = new Date(date)
+      dateEnd.setDate(dateEnd.getDate()+day)
+      let newDateEnd = dateEnd.toISOString().split("T")[0]
+      // console.log(newDateEnd);
+      await connection.execute("INSERT INTO cron_job (name,type, schedule,date_of_execution,created_at,status,date_end)VALUES (?,?,?,?,?,1,?)",[name,type,schedule,dateFull,dateFull,newDateEnd])
+      
+      return res.json({
+        code: 200,
+        endpoint: req.originalUrl,
+        message: 'Los partidos de la semana se han actualizado de manera exitosa',
+      })
+    }
+
+    return res.json({
+      code: 200,
+      endpoint: req.originalUrl,
+      message: 'La actualización semanal ya se ha realizado',
     })
 
   } catch (error) {
