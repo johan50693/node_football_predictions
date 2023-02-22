@@ -315,7 +315,7 @@ export const checkUpdateByDay = async (req, res=response) => {
 
     if(resultValidate.length > 0) {
       let nextDate = new Date(resultValidate[0].date_of_execution)
-      nextDate.setDate(nextDate.getDate() + 1)
+      nextDate.setDate(nextDate.getDate())
       const [ resultNext ] = await connection.execute("select * from cron_job cj where cj.created_at =? and cj.name=? limit 1",[nextDate,name])
       if(resultNext.length <= 0){
         updateMassive = true
@@ -324,7 +324,7 @@ export const checkUpdateByDay = async (req, res=response) => {
       let actualDate = new Date(new Date().toISOString().split("T")[0]).getTime()
       diference = (lastDate - actualDate) / (1000 *60 *60 *24) 
       sumDiference = Math.trunc(diference)
-      // console.log(lastDate,actualDate,diference)
+      // console.log({lastDate,actualDate,sumDiference})
     }
 
     if(result.length > 0) {
@@ -339,9 +339,7 @@ export const checkUpdateByDay = async (req, res=response) => {
       }
     }
 
-    if  (canUpdate) {
-
-      await connection.execute("INSERT INTO cron_job (name,type, schedule,date_of_execution,created_at,status)VALUES (?,?,?,?,?,1)",[name,type,schedule,dateFull,dateFull])
+    if  (canUpdate && sumDiference <= 0) {
       for (let i = sumDiference; i <= 0; i++) {
         let today = new Date(date)
         today.setDate(today.getDate() + i)
@@ -349,6 +347,8 @@ export const checkUpdateByDay = async (req, res=response) => {
         const newDate= today.toISOString().split("T")[0].split('-')
         await updateScraping(newDate[0],newDate[1],newDate[2])
       }
+      await connection.execute("INSERT INTO cron_job (name,type, schedule,date_of_execution,created_at,status)VALUES (?,?,?,?,?,1)",[name,type,schedule,dateFull,dateFull])
+      
       return res.json({
         code: 200,
         endpoint: req.originalUrl,
