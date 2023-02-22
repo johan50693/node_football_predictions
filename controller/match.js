@@ -298,17 +298,33 @@ export const checkUpdateByDay = async (req, res=response) => {
   let type = 'UPDATE'
   let diference = 0
   let canUpdate = true
-
+  let updateMassive = false
+  let sumDiference = 0
   try {
 
-    const [ result ] = await connection.execute("select *from cron_job cj where cj.created_at =? and cj.name=?",[date,name])
-    
+    const [ result ] = await connection.execute("select * from cron_job cj where cj.created_at =? and cj.name=? limit 1",[date,name])
+    const [ resultValidate ] = await connection.execute("select * from cron_job cj where cj.name=? order by cj.date_of_execution desc limit 1",[name])
+    // console.log(resultValidate)
     if(result.length == 20) {
       return res.status(400).json({
         code: 400,
         endpoint: req.originalUrl,
         message: 'Las actualizaciones diarias ya se han completado',
       })
+    }
+
+    if(resultValidate.length > 0) {
+      let nextDate = new Date(resultValidate[0].date_of_execution)
+      nextDate.setDate(nextDate.getDate() + 1)
+      const [ resultNext ] = await connection.execute("select * from cron_job cj where cj.created_at =? and cj.name=? limit 1",[nextDate,name])
+      if(resultNext.length <= 0){
+        updateMassive = true
+      }
+      let lastDate= new Date (nextDate.toISOString().split("T")[0]).getTime()
+      let actualDate = new Date(new Date().toISOString().split("T")[0]).getTime()
+      diference = (lastDate - actualDate) / (1000 *60 *60 *24) 
+      sumDiference = Math.trunc(diference)
+      // console.log(lastDate,actualDate,diference)
     }
 
     if(result.length > 0) {
@@ -326,11 +342,13 @@ export const checkUpdateByDay = async (req, res=response) => {
     if  (canUpdate) {
 
       await connection.execute("INSERT INTO cron_job (name,type, schedule,date_of_execution,created_at,status)VALUES (?,?,?,?,?,1)",[name,type,schedule,dateFull,dateFull])
-      let today = new Date()
-      today.setDate(today.getDate() )
-      const newDate= today.toISOString().split("T")[0].split('-')
-      await updateScraping(newDate[0],newDate[1],newDate[2])
-
+      for (let i = sumDiference; i <= 0; i++) {
+        let today = new Date(date)
+        today.setDate(today.getDate() + i)
+        // console.log(today);
+        const newDate= today.toISOString().split("T")[0].split('-')
+        await updateScraping(newDate[0],newDate[1],newDate[2])
+      }
       return res.json({
         code: 200,
         endpoint: req.originalUrl,
