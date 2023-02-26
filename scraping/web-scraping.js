@@ -91,7 +91,7 @@ const updateMatchesByScrapping = async (league,team_a, team_b, goals_a, goals_b,
   }
 }
 
-const getDataByScrapping = async (year,month,day) => {
+export const getDataByScrapping = async (year,month,day) => {
 
   let data= []
   // Formato DDMMYYYY

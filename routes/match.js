@@ -5,7 +5,7 @@
 
 import { Router } from "express";
 import { check } from "express-validator";
-import { assignToTournament, checkCreateByWeek, checkUpdateByDay, createbyrange, createMatch, deleteMatch, getMatch, listMatch, updatebyrange, updateMatch } from "../controller/match.js";
+import { assignToTournament, checkCreateByWeek, checkUpdateByDay, createbyrange, createMatch, deleteMatch, getMatch, getScrapingByDate, listMatch, updatebyrange, updateMatch } from "../controller/match.js";
 import { validarCampos, validarJWT } from "../middlewares/index.js";
 
 
@@ -62,6 +62,6 @@ router.post('/createbyrange/results',[
 router.post('/checkcreatebyweek/results',[
   validarCampos
 ],checkCreateByWeek);
-
+router.post('/getscrapingbydate/list',[validarCampos], getScrapingByDate)
 
 export default router
